@@ -3,5 +3,30 @@ html
   head
     title= title
     link(rel='stylesheet', href='/stylesheets/style.css')
+    meta(name="viewport", content="width=device-width, initial-scale=1")
   body
-    block content
+    header
+      nav
+        ul
+          li
+            a(href="/clubhouse") Members Only
+          if !user
+            li
+              a(href="/clubhouse/signup") Sign Up
+            li
+              a(href="/clubhouse/login") Log In
+          else
+            li
+              a(href="/clubhouse/newMessage") New Message
+            li
+              a(href="/clubhouse/newMember") Become Member
+            li
+              a(href="/clubhouse/newAdmin") Become Admin
+            li
+              a(href="/clubhouse/logout") Log Out
+    
+    main
+      block content
+    
+    footer
+      p Created by Darnell
