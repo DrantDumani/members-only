@@ -2,6 +2,7 @@
 
 const userArgs = process.argv.slice(2);
 
+const bcrypt = require("bcrypt")
 const User = require("./models/user");
 const Post = require("./models/post");
 
@@ -31,10 +32,11 @@ async function userCreate(
   lName,
   username,
   email,
-  password,
+  textPass,
   isMember = false,
   isAdmin = false
 ) {
+  const password = await bcrypt.hash(textPass, 10)
   const userDetail = {
     fName,
     lName,
