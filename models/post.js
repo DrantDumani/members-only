@@ -3,9 +3,9 @@ const { Schema } = mongoose;
 
 const PostSchema = new Schema({
   title: { type: String, required: true, maxLength: 100 },
-  content: { type: String, required: true, maxLength: 600 },
-  timestamp: { type: Date, default: Date.now() },
-  author: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  content: { type: String, required: true, maxLength: 1000 },
+  timestamp: { type: Number, default: Date.now() },
+  author: { type: Schema.Types.ObjectId, ref: "User" },
 });
 
 PostSchema.virtual("humanDate").get(function () {
