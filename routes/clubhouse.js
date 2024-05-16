@@ -1,30 +1,33 @@
 const express = require("express");
-const router = require("router");
+const postController = require("../controllers/postController");
+const router = express.Router();
 
-router.get("/", "homepage");
+router.get("/", postController.post_list);
 
-router.get("/sign-up", "signUpGET");
+// router.get("/sign-up", "signUpGET");
 
-router.post("/sign-up", "signUpPOST");
+// router.post("/sign-up", "signUpPOST");
 
-router.get("/log-in", "loginGET");
+// router.get("/log-in", "loginGET");
 
-router.post("/log-in", "loginPOST");
+// router.post("/log-in", "loginPOST");
 
-router.get("/logout", "logout");
+// router.get("/logout", "logout");
 
-router.get("/newMember", "memberForm");
+// router.get("/newMember", "memberForm");
 
-router.post("/newMember", "validateMember");
+// router.post("/newMember", "validateMember");
 
-router.get("/newMessage", "newMessageGET");
+// router.get("/newMessage", "newMessageGET");
 
-router.post("/newMessage", "newMessagePOST");
+// router.post("/newMessage", "newMessagePOST");
 
-router.get("/delete", "deleteMsgGET");
+// router.get("/delete", "deleteMsgGET");
 
-router.post("/delete", "deleteMsgPOST");
+// router.post("/delete", "deleteMsgPOST");
 
-router.get("/newAdmin", "grantAdmitGET");
+// router.get("/newAdmin", "grantAdmitGET");
 
-router.post("/newAdmin", "grantAdminPOST");
+// router.post("/newAdmin", "grantAdminPOST");
+
+module.exports = router;
