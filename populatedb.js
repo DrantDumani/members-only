@@ -20,6 +20,11 @@ async function main() {
   console.log("Debug: About to connect");
   await mongoose.connect(mongoDB);
   console.log("Debug: Should be connected?");
+  //clear database first
+  const collections = mongoose.connection.collections
+  await Promise.all(Object.values(collections).map(col => {
+    col.deleteMany({})
+  }))
   await createUsers();
   await createPosts();
   console.log("Debug: Closing mongoose");
@@ -28,8 +33,6 @@ async function main() {
 
 async function userCreate(
   index,
-  fName,
-  lName,
   username,
   email,
   textPass,
@@ -38,8 +41,6 @@ async function userCreate(
 ) {
   const password = await bcrypt.hash(textPass, 10)
   const userDetail = {
-    fName,
-    lName,
     username,
     email,
     password,
@@ -64,16 +65,12 @@ async function createUsers() {
   await Promise.all([
     userCreate(
       0,
-      "Paula",
-      "Polestar",
       "GirlFromTwoson",
       "paula@polestar.com",
       "MrBear"
     ),
     userCreate(
       1,
-      "Toyosatomimi",
-      "Miko",
       "True Administrator",
       "tendesires@taoism.com",
       "TrulyThatOfHeaven",
@@ -82,8 +79,6 @@ async function createUsers() {
     ),
     userCreate(
       2,
-      "Hatsune",
-      "Miku",
       "Project_Diva01",
       "tupac@gmail.com",
       "meteor5",
@@ -91,8 +86,6 @@ async function createUsers() {
     ),
     userCreate(
       3,
-      "Minch",
-      "Porky",
       "KingP",
       "newPork@city.com",
       "bestFriendN",
@@ -100,8 +93,6 @@ async function createUsers() {
     ),
     userCreate(
       4,
-      "Lich",
-      "The",
       "LastScholarOfGolb",
       "oblivion@ooo.com",
       "TheEnchiridion"
