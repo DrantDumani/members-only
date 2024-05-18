@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  h1= title
+  
+  p #[span Password Hint:] The real name of the True Administrator of the 13th incident (no spaces, first and last name start with capital letters).
+  form(method="POST")
+    div
+      label(for="mPassword")
+      input#mPassword(type="password" required name="password")
+    button Submit
+
+  if error
+    p= error

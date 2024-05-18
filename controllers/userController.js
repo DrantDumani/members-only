@@ -2,6 +2,7 @@ const passport = require("../utils/passportConfig");
 const User = require("../models/user");
 const { body, validationResult } = require("express-validator");
 const bcrypt = require("bcrypt");
+require("dotenv").config();
 
 exports.signUp_get = (req, res, next) => {
   if (req.user) return res.redirect("/");
@@ -91,4 +92,37 @@ exports.logout = (req, res, next) => {
     if (err) return next(err);
     res.redirect("/");
   });
+};
+
+exports.become_member_get = (req, res, next) => {
+  if (!req.user || (req.user && (req.user.isMember || req.user.isAdmin))) {
+    return res.redirect("/");
+  } else {
+    res.render("memberForm", {
+      title: "Member form",
+    });
+  }
+};
+
+exports.become_member_post = async (req, res, next) => {
+  if (!req.user || (req.user && (req.user.isMember || req.user.isAdmin))) {
+    return res.redirect("/");
+  } else {
+    const match = req.body.password === process.env.MEMBERPW;
+    if (!req.body.password || !match) {
+      res.render("memberForm", {
+        title: "Member form",
+        error: "Incorrect password",
+      });
+    } else {
+      const newMember = new User(req.user);
+      newMember.isMember = true;
+      try {
+        await User.findByIdAndUpdate(req.user.id, newMember);
+        res.redirect("/");
+      } catch (err) {
+        return next(err);
+      }
+    }
+  }
 };

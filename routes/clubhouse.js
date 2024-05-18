@@ -15,9 +15,9 @@ router.post("/login", userController.login_post);
 
 router.get("/logout", userController.logout);
 
-// router.get("/newMember", "memberForm");
+router.get("/newMember", userController.become_member_get);
 
-// router.post("/newMember", "validateMember");
+router.post("/newMember", userController.become_member_post);
 
 // router.get("/newMessage", "newMessageGET");
 
