@@ -10,7 +10,6 @@ exports.post_list = async (req, res, next) => {
     res.render("index", {
       title: "Clubhouse",
       posts: posts,
-      user: undefined,
     });
   } catch (err) {
     return next(err);

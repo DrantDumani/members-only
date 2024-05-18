@@ -1,0 +1,14 @@
+extends layout 
+
+block content
+  h1= title
+  form(action="" method="POST")
+    div
+      label(for="email") Email:
+      input#email(type="email" name="email")
+    div
+      label(for="pw") Password: 
+      input#pw(type="password" name="password")
+    button Log In
+  if failureMsg
+    p= failureMsg

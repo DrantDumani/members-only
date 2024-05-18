@@ -1,5 +1,6 @@
 const express = require("express");
 const postController = require("../controllers/postController");
+const userController = require("../controllers/userController");
 const router = express.Router();
 
 router.get("/", postController.post_list);
@@ -8,11 +9,11 @@ router.get("/", postController.post_list);
 
 // router.post("/sign-up", "signUpPOST");
 
-// router.get("/log-in", "loginGET");
+router.get("/login", userController.login_get);
 
-// router.post("/log-in", "loginPOST");
+router.post("/login", userController.login_post);
 
-// router.get("/logout", "logout");
+router.get("/logout", userController.logout);
 
 // router.get("/newMember", "memberForm");
 
