@@ -1,0 +1,27 @@
+extends layout 
+
+block content
+  h1= title
+
+  form(method="POST")
+    div
+      label(for="uname") Username: 
+      input#uname(name="username" maxLength=40 required value=username || "")
+      if errors && errors.username
+        p= errors.username.msg
+    div
+      label(for="email") Email:
+      input#email(name="email" type="email" required value=email || "")
+      if errors && errors.email
+        p= errors.email.msg
+    div 
+      label(for="pw") Password: 
+      input#pw(type="password", name="password" required)
+      if errors && errors.password 
+        p= errors.password.msg
+    div
+      label(for="confirmPw") Confirm Password:
+      input#confirmPw(type="password", name="confirmPass" required)
+      if errors && errors.confirmPass
+        p= errors.confirmPass.msg
+    button Submit

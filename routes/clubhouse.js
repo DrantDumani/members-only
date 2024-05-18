@@ -5,9 +5,9 @@ const router = express.Router();
 
 router.get("/", postController.post_list);
 
-// router.get("/sign-up", "signUpGET");
+router.get("/signup", userController.signUp_get);
 
-// router.post("/sign-up", "signUpPOST");
+router.post("/signup", userController.signUp_post);
 
 router.get("/login", userController.login_get);
 
