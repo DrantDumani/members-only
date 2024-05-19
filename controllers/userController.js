@@ -98,8 +98,9 @@ exports.become_member_get = (req, res, next) => {
   if (!req.user || (req.user && (req.user.isMember || req.user.isAdmin))) {
     return res.redirect("/");
   } else {
-    res.render("memberForm", {
-      title: "Member form",
+    res.render("roleForm", {
+      title: "Member Form",
+      pwHint: true,
     });
   }
 };
@@ -110,9 +111,10 @@ exports.become_member_post = async (req, res, next) => {
   } else {
     const match = req.body.password === process.env.MEMBERPW;
     if (!req.body.password || !match) {
-      res.render("memberForm", {
-        title: "Member form",
+      res.render("roleForm", {
+        title: "Member Form",
         error: "Incorrect password",
+        pwHint: true,
       });
     } else {
       const newMember = new User(req.user);
@@ -123,6 +125,37 @@ exports.become_member_post = async (req, res, next) => {
       } catch (err) {
         return next(err);
       }
+    }
+  }
+};
+
+exports.become_admin_get = (req, res, next) => {
+  if (!req.user || (req.user && req.user.isAdmin)) {
+    return res.redirect("/");
+  }
+  res.render("roleForm", {
+    title: "Admin Form",
+  });
+};
+
+exports.become_admin_post = async (req, res, next) => {
+  if (!req.user || (req.user && req.user.isAdmin)) {
+    return res.redirect("/");
+  }
+  const match = req.body.password === process.env.ADMINPW;
+  if (!req.body.password || !match) {
+    res.render("roleForm", {
+      title: "Admin Form",
+      error: "Incorrect Password",
+    });
+  } else {
+    const newAdmin = new User(req.user);
+    newAdmin.isAdmin = true;
+    try {
+      await User.findByIdAndUpdate(req.user.id, newAdmin);
+      res.redirect("/");
+    } catch (err) {
+      return next(err);
     }
   }
 };

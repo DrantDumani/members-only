@@ -27,8 +27,8 @@ router.post("/newMember", userController.become_member_post);
 
 // router.post("/delete", "deleteMsgPOST");
 
-// router.get("/newAdmin", "grantAdmitGET");
+router.get("/newAdmin", userController.become_admin_get);
 
-// router.post("/newAdmin", "grantAdminPOST");
+router.post("/newAdmin", userController.become_admin_post);
 
 module.exports = router;
