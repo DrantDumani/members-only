@@ -5,28 +5,30 @@ html
     link(rel='stylesheet', href='/stylesheets/style.css')
     meta(name="viewport", content="width=device-width, initial-scale=1")
   body
-    header
-      nav
-        ul
+    header.header
+      nav.nav
+        ul.nav-list
           li
-            a(href="/clubhouse") Members Only
+            a.logo(href="/clubhouse") Members Only
           if !user
-            li
+            li.left-margin
               a(href="/clubhouse/signup") Sign Up
             li
               a(href="/clubhouse/login") Log In
           else
-            li
-              a(href="/clubhouse/newMessage") New Message
-            li
-              a(href="/clubhouse/newMember") Become Member
-            li
-              a(href="/clubhouse/newAdmin") Become Admin
-            li
+            li.left-margin
               a(href="/clubhouse/logout") Log Out
     
-    main
-      block content
+    main.main
+      div.main-wrapper 
+        div.user-ui
+          if (user)
+            a(href="/clubhouse/newMessage") New Message
+            a(href="/clubhouse/newMember") Become Member
+            a(href="/clubhouse/newAdmin") Become Admin
+
+        block content
     
-    footer
-      p Created by Darnell
+    footer.footer
+      div.footer-div
+        p Created by Darnell

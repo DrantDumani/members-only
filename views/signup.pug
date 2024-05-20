@@ -3,7 +3,7 @@ extends layout
 block content
   h1= title
 
-  form(method="POST")
+  form.form(method="POST")
     div
       label(for="uname") Username: 
       input#uname(name="username" maxLength=40 required value=username || "")
@@ -24,4 +24,4 @@ block content
       input#confirmPw(type="password", name="confirmPass" required)
       if errors && errors.confirmPass
         p= errors.confirmPass.msg
-    button Submit
+    button.submit Submit

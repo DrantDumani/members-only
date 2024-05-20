@@ -4,31 +4,34 @@ block content
   h1= title
   div
     if user
-      h2 Welcome #{user.username}
-      p Status: #{user.status}
+      div.user-info
+        h2 Welcome #{user.username}
+        p.user-status Status: #{user.status}
     
     if posts.length
       each post in posts
-        div
-          h3 #{post.title}
+        div.post
           if user && user.isMember
-            p #{post.author.username}
-            p #{post.humanDate}
+            div.member-view
+              p #{post.author.username}
+              p #{post.humanDate}
+          h3.post-title #{post.title}
           p #{post.content}
           if user && user.isAdmin
-            a(href="/clubhouse/delete/" + post._id) Delete
+            a.delete-btn(href="/clubhouse/delete/" + post._id) Delete
     else if currentPage
       p There are no posts on this page
     else 
       p There are no posts yet. Be the first to make one!
-    
-    if currentPage > 1
-      a(href=`/clubhouse?page=${currentPage-1}`) Prev
-    if currentPage < count
-      a(href=`/clubhouse?page=${currentPage+1}`) Next
+   
+    div.page-link-container
+      if currentPage > 1 
+        a(href=`/clubhouse?page=${currentPage-1}`) Prev
+      if currentPage < count
+        a(href=`/clubhouse?page=${currentPage+1}`) Next
 
     if count > 1
-      form(action="" method="GET")
+      form.page-select(action="" method="GET")
         label(for="page") Choose a page:
         select#page(name="page")
           - for (let i = 1; i <= Math.ceil(count); i++)

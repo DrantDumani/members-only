@@ -4,12 +4,12 @@ block content
   h1= title
   
   if pwHint
-    p #[span Password Hint:] The real name of the True Administrator of the 13th incident (no spaces, first and last name start with capital letters).
-  form(method="POST")
+    p.hint #[span Password Hint:] The real name of the True Administrator of the 13th incident (no spaces, first and last name start with capital letters).
+  form.form(method="POST")
     div
       label(for="mPassword") Enter Password:
       input#mPassword(type="password" required name="password")
-    button Submit
+    button.submit Submit
 
   if error
     p= error

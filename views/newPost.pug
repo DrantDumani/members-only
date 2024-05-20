@@ -2,7 +2,7 @@ extends layout
 
 block content
   h1= title 
-  form(action="" method="POST")
+  form.form(action="" method="POST")
     div
       label(for="title") Title:
       input#title(name="title" required maxlength="100")
@@ -13,4 +13,4 @@ block content
       textarea#content(name="content" required maxlength="1000")
       if errors && errors.content
         p= errors.content.msg
-    button Post New Message
+    button.submit Post New Message

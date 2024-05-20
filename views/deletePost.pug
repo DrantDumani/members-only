@@ -2,13 +2,14 @@ extends layout
 
 block content 
   h1= title
-  div
-    h3 #{post.title}
-    p #{post.author.username}
-    p #{post.humanDate}
+  div.post
+    div.member-view
+      p #{post.author.username}
+      p #{post.humanDate}
+    h3.post-title #{post.title}
     p #{post.content}
   
   form(action="" method="POST")
     input(type="hidden" value=post._id name="id")
-    button Delete
+    button.delete-btn Delete
     

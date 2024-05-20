@@ -2,15 +2,15 @@ extends layout
 
 block content
   h1= title
-  form(action="" method="POST")
+  form.form(action="" method="POST")
     div
       label(for="email") Email:
       input#email(type="email" name="email" required)
     div
       label(for="pw") Password: 
       input#pw(type="password" name="password" required)
-    button Log In
+    button.submit Log In
   if failureMsg
     p= failureMsg
 
-  p Don't have an account? #[a(href="/clubhouse/signup") Sign up] and join the club.
+  p Don't have an account? #[a.blue-link(href="/clubhouse/signup") Sign up] and join the club.
