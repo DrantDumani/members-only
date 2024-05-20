@@ -104,7 +104,7 @@ exports.become_member_get = (req, res, next) => {
 };
 
 exports.become_member_post = async (req, res, next) => {
-  if (!req.user || (req.user && (req.user.isMember || req.user.isAdmin))) {
+  if (!req.user || (req.user && req.user.isMember)) {
     return res.redirect("/");
   } else {
     const match = req.body.password === process.env.MEMBERPW;
@@ -149,6 +149,7 @@ exports.become_admin_post = async (req, res, next) => {
   } else {
     const newAdmin = new User(req.user);
     newAdmin.isAdmin = true;
+    newAdmin.isMember = true;
     try {
       await User.findByIdAndUpdate(req.user.id, newAdmin);
       res.redirect("/");
