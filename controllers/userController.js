@@ -1,7 +1,6 @@
 const passport = require("../utils/passportConfig");
 const User = require("../models/user");
 const { body, validationResult } = require("express-validator");
-const bcrypt = require("bcrypt");
 require("dotenv").config();
 
 exports.signUp_get = (req, res, next) => {
@@ -47,11 +46,10 @@ exports.signUp_post = [
           username: req.body.username,
         });
       } else {
-        const hashPass = await bcrypt.hash(req.body.password, 10);
         const user = new User({
           username: req.body.username,
           email: req.body.email,
-          password: hashPass,
+          password: req.body.password,
         });
         await user.save();
         req.login(user, (err) => {
