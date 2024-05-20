@@ -1,0 +1,15 @@
+extends layout 
+
+block content 
+  h1= title
+  div.post
+    div.member-view
+      p #{post.author.username}
+      p #{post.humanDate}
+    h3.post-title #{post.title}
+    p #{post.content}
+  
+  form(action="" method="POST")
+    input(type="hidden" value=post._id name="id")
+    button.delete-btn Delete
+    

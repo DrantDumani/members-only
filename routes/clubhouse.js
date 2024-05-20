@@ -1,30 +1,34 @@
 const express = require("express");
-const router = require("router");
+const postController = require("../controllers/postController");
+const userController = require("../controllers/userController");
+const router = express.Router();
 
-router.get("/", "homepage");
+router.get("/", postController.post_list);
 
-router.get("/sign-up", "signUpGET");
+router.get("/signup", userController.signUp_get);
 
-router.post("/sign-up", "signUpPOST");
+router.post("/signup", userController.signUp_post);
 
-router.get("/log-in", "loginGET");
+router.get("/login", userController.login_get);
 
-router.post("/log-in", "loginPOST");
+router.post("/login", userController.login_post);
 
-router.get("/logout", "logout");
+router.get("/logout", userController.logout);
 
-router.get("/newMember", "memberForm");
+router.get("/newMember", userController.become_member_get);
 
-router.post("/newMember", "validateMember");
+router.post("/newMember", userController.become_member_post);
 
-router.get("/newMessage", "newMessageGET");
+router.get("/newMessage", postController.new_post_get);
 
-router.post("/newMessage", "newMessagePOST");
+router.post("/newMessage", postController.new_post_post);
 
-router.get("/delete", "deleteMsgGET");
+router.get("/delete/:postId", postController.delete_post_get);
 
-router.post("/delete", "deleteMsgPOST");
+router.post("/delete/:postId", postController.delete_post_post);
 
-router.get("/newAdmin", "grantAdmitGET");
+router.get("/newAdmin", userController.become_admin_get);
 
-router.post("/newAdmin", "grantAdminPOST");
+router.post("/newAdmin", userController.become_admin_post);
+
+module.exports = router;

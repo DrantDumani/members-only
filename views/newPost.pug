@@ -1,0 +1,16 @@
+extends layout
+
+block content
+  h1= title 
+  form.form(action="" method="POST")
+    div
+      label(for="title") Title:
+      input#title(name="title" required maxlength="100")
+      if errors && errors.title
+        p= errors.title.msg
+    div
+      label(for="content") Enter your post here: 
+      textarea#content(name="content" required maxlength="1000")
+      if errors && errors.content
+        p= errors.content.msg
+    button.submit Post New Message

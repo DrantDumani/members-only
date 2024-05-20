@@ -2,4 +2,41 @@ extends layout
 
 block content
   h1= title
-  p Welcome to #{title}
+  div
+    if user
+      div.user-info
+        h2 Welcome #{user.username}
+        p.user-status Status: #{user.status}
+    
+    if posts.length
+      each post in posts
+        div.post
+          if user && user.isMember
+            div.member-view
+              p #{post.author.username}
+              p #{post.humanDate}
+          h3.post-title #{post.title}
+          p #{post.content}
+          if user && user.isAdmin
+            a.delete-btn(href="/clubhouse/delete/" + post._id) Delete
+    else if currentPage
+      p There are no posts on this page
+    else 
+      p There are no posts yet. Be the first to make one!
+   
+    div.page-link-container
+      if currentPage > 1 
+        a(href=`/clubhouse?page=${currentPage-1}`) Prev
+      if currentPage < count
+        a(href=`/clubhouse?page=${currentPage+1}`) Next
+
+    if count > 1
+      form.page-select(action="" method="GET")
+        label(for="page") Choose a page:
+        select#page(name="page")
+          - for (let i = 1; i <= Math.ceil(count); i++)
+              if i === currentPage
+                option(value=i selected) #{i}
+              else
+                option(value=i) #{i}
+        button Go to

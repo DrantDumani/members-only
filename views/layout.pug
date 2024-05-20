@@ -3,5 +3,34 @@ html
   head
     title= title
     link(rel='stylesheet', href='/stylesheets/style.css')
+    meta(name="viewport", content="width=device-width, initial-scale=1")
   body
-    block content
+    header.header
+      nav.nav
+        ul.nav-list
+          li
+            a.logo(href="/clubhouse") Members Only
+          if !user
+            li.left-margin
+              a(href="/clubhouse/signup") Sign Up
+            li
+              a(href="/clubhouse/login") Log In
+          else
+            li.left-margin
+              a(href="/clubhouse/logout") Log Out
+    
+    main.main
+      div.main-wrapper 
+        div.user-ui
+          if (user)
+            a(href="/clubhouse/newMessage") New Message
+            if !user.isMember
+              a(href="/clubhouse/newMember") Become Member
+            if !user.isAdmin
+              a(href="/clubhouse/newAdmin") Become Admin
+
+        block content
+    
+    footer.footer
+      div.footer-div
+        p Created by Darnell
