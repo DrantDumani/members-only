@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
+const formatDate = require("../utils/handleDate");
 
 const PostSchema = new Schema({
   title: { type: String, required: true, maxLength: 100 },
@@ -9,8 +10,8 @@ const PostSchema = new Schema({
 });
 
 PostSchema.virtual("humanDate").get(function () {
-  const date = new Date(this.timestamp);
-  return date.toLocaleDateString();
+  const date = formatDate(this.timestamp);
+  return date;
 });
 
 module.exports = mongoose.model("Post", PostSchema);
