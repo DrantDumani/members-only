@@ -4,13 +4,22 @@ const { body, validationResult } = require("express-validator");
 
 exports.post_list = async (req, res, next) => {
   try {
+    const page = Number(req.query.page) || 1;
+    const postsPerPage = 10;
+
     const posts = await Post.find()
       .populate({ path: "author", select: "username" })
       .sort({ timestamp: -1 })
+      .skip((page - 1) * postsPerPage)
+      .limit(postsPerPage)
       .exec();
+    const postCount = await Post.countDocuments().exec();
+
     res.render("index", {
       title: "Clubhouse",
       posts: posts,
+      count: postCount / postsPerPage,
+      currentPage: page,
     });
   } catch (err) {
     return next(err);
@@ -35,6 +44,7 @@ exports.new_post_post = [
     .withMessage("Message cannot exceed 1000 characters"),
 
   async (req, res, next) => {
+    const errors = validationResult(req);
     if (!req.user) return res.redirect("/clubhouse/login");
     else {
       const post = new Post({
