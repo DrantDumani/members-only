@@ -19,13 +19,13 @@ router.get("/newMember", userController.become_member_get);
 
 router.post("/newMember", userController.become_member_post);
 
-// router.get("/newMessage", "newMessageGET");
+router.get("/newMessage", postController.new_post_get);
 
-// router.post("/newMessage", "newMessagePOST");
+router.post("/newMessage", postController.new_post_post);
 
-// router.get("/delete", "deleteMsgGET");
+router.get("/delete/:postId", postController.delete_post_get);
 
-// router.post("/delete", "deleteMsgPOST");
+router.post("/delete/:postId", postController.delete_post_post);
 
 router.get("/newAdmin", userController.become_admin_get);
 

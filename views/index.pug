@@ -12,3 +12,5 @@ block content
           p #{post.author.username}
           p #{post.humanDate}
         p #{post.content}
+        if user && user.isAdmin
+          a(href="/clubhouse/delete/" + post._id) Delete

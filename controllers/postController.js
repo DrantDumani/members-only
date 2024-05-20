@@ -1,5 +1,6 @@
 const Post = require("../models/post");
 const User = require("../models/user");
+const { body, validationResult } = require("express-validator");
 
 exports.post_list = async (req, res, next) => {
   try {
@@ -11,6 +12,68 @@ exports.post_list = async (req, res, next) => {
       title: "Clubhouse",
       posts: posts,
     });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+exports.new_post_get = (req, res, next) => {
+  if (!req.user) return res.redirect("/clubhouse/login");
+  res.render("newPost", { title: "New Message" });
+};
+
+exports.new_post_post = [
+  body("title", "Title must be 3 characters or more")
+    .trim()
+    .isLength({ min: 3 })
+    .isLength({ max: 100 })
+    .withMessage("Title cannot be longer than 100 characters"),
+  body("content", "Message cannot be empty")
+    .trim()
+    .isLength({ min: 1 })
+    .isLength({ max: 1000 })
+    .withMessage("Message cannot exceed 1000 characters"),
+
+  async (req, res, next) => {
+    if (!req.user) return res.redirect("/clubhouse/login");
+    else {
+      const post = new Post({
+        title: req.body.title,
+        content: req.body.content,
+        author: req.user.id,
+      });
+
+      try {
+        await post.save();
+        res.redirect("/");
+      } catch (err) {
+        return next(err);
+      }
+    }
+  },
+];
+
+exports.delete_post_get = async (req, res, next) => {
+  if (!req.user?.isAdmin) return res.redirect("/");
+  try {
+    const post = await Post.findById(req.params.postId)
+      .populate("author")
+      .exec();
+    if (!post) return res.redirect("/");
+    res.render("deletePost", {
+      title: "Delete Post",
+      post: post,
+    });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+exports.delete_post_post = async (req, res, next) => {
+  if (!req.user?.isAdmin) return res.redirect("/");
+  try {
+    await Post.findByIdAndDelete(req.body.id);
+    res.redirect("/");
   } catch (err) {
     return next(err);
   }
