@@ -24,8 +24,10 @@ html
         div.user-ui
           if (user)
             a(href="/clubhouse/newMessage") New Message
-            a(href="/clubhouse/newMember") Become Member
-            a(href="/clubhouse/newAdmin") Become Admin
+            if !user.isMember
+              a(href="/clubhouse/newMember") Become Member
+            if !user.isAdmin
+              a(href="/clubhouse/newAdmin") Become Admin
 
         block content
     
