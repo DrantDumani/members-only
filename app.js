@@ -6,11 +6,19 @@ const logger = require("morgan");
 require("dotenv").config();
 const mongoose = require("mongoose");
 const MongoStore = require("connect-mongo");
+const compression = require("compression");
+const helmet = require("helmet");
 
 const indexRouter = require("./routes/index");
 const clubhouseRouter = require("./routes/clubhouse");
 const passport = require("./utils/passportConfig");
 const localUser = require("./utils/localUser");
+const RateLimit = require("express-rate-limit");
+
+const limiter = RateLimit({
+  windowMs: 1 * 60 * 1000,
+  max: 100,
+});
 
 mongoose.set("strictQuery", "false");
 const mongoDB = process.env.MONGO_DB_URI;
@@ -46,8 +54,10 @@ app.use(session(sessionConfig));
 app.use(passport.session());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
+app.use(helmet());
 
 app.use(localUser);
+app.use(compression());
 app.use("/", indexRouter);
 app.use("/clubhouse", clubhouseRouter);
 
