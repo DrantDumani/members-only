@@ -9,4 +9,10 @@ const UserSchema = new Schema({
   isAdmin: { type: Boolean, default: false },
 });
 
+UserSchema.virtual("status").get(function () {
+  if (this.isAdmin) return "Administrator";
+  else if (this.isMember) return "Member";
+  else return "User";
+});
+
 module.exports = mongoose.model("User", UserSchema);

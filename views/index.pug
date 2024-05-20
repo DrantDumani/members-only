@@ -5,6 +5,7 @@ block content
   div
     if user
       h2 Welcome #{user.username}
+      p Status: #{user.status}
     each post in posts
       div
         h3 #{post.title}
