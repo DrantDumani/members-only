@@ -6,19 +6,19 @@ block content
     if user
       div.user-info
         h2 Welcome #{user.username}
-        p.user-status Status: #{user.status}
+        p.user-status Status: #{user.permissions}
     
     if posts.length
       each post in posts
         div.post
-          if user && user.isMember
+          if post.created_at
             div.member-view
-              p #{post.author.username}
-              p #{post.humanDate}
+              p #{post.username}
+              p #{humanDate(post.created_at)}
           h3.post-title #{post.title}
           p #{post.content}
-          if user && user.isAdmin
-            a.delete-btn(href="/clubhouse/delete/" + post._id) Delete
+          if user && user.permissions === 'admin'
+            a.delete-btn(href="/clubhouse/delete/" + post.id) Delete
     else if currentPage
       p There are no posts on this page
     else 

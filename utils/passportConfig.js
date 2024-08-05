@@ -1,11 +1,11 @@
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
-const User = require("../models/user");
 const bcrypt = require("bcrypt");
+const queries = require("../db/queries");
 
 const verify = async (email, password, done) => {
   try {
-    const user = await User.findOne({ email: email }).exec();
+    const user = await queries.getUserByColumnField("email", email);
     if (!user) {
       return done(null, false, { message: "It didn't work" });
     }
@@ -29,7 +29,7 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser(async (id, done) => {
   try {
-    const user = await User.findById(id);
+    const user = await queries.getUserByColumnField("id", id);
     done(null, user);
   } catch (err) {
     done(err);

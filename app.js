@@ -1,11 +1,12 @@
 const createError = require("http-errors");
 const express = require("express");
 const session = require("express-session");
+
 const path = require("path");
 const logger = require("morgan");
 require("dotenv").config();
-const mongoose = require("mongoose");
-const MongoStore = require("connect-mongo");
+const pool = require("./db/pool");
+const pgSession = require("connect-pg-simple")(session);
 const compression = require("compression");
 const helmet = require("helmet");
 
@@ -20,15 +21,8 @@ const limiter = RateLimit({
   max: 100,
 });
 
-mongoose.set("strictQuery", "false");
-const mongoDB = process.env.MONGO_DB_URI;
-
-const client = mongoose
-  .connect(mongoDB)
-  .then((m) => m.connection.getClient())
-  .catch((err) => console.log(err));
-
 const app = express();
+app.use(limiter);
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -37,9 +31,13 @@ app.set("view engine", "pug");
 app.use(logger("dev"));
 app.use(express.json());
 
+const pgSessionConfig = {
+  pool: pool,
+};
+
 const sessionConfig = {
   secret: process.env.SECRET,
-  store: MongoStore.create({ clientPromise: client }),
+  store: new pgSession(pgSessionConfig),
   resave: false,
   saveUninitialized: true,
   cookie: { maxAge: 1000 * 3600 },

@@ -1,6 +1,6 @@
 const passport = require("../utils/passportConfig");
-const User = require("../models/user");
 const { body, validationResult } = require("express-validator");
+const queries = require("../db/queries");
 require("dotenv").config();
 
 exports.signUp_get = (req, res, next) => {
@@ -24,20 +24,25 @@ exports.signUp_post = [
   body("confirmPass", "Passwords must match").custom((value, { req }) => {
     return value === req.body.password;
   }),
-
   async (req, res, next) => {
     const errors = validationResult(req);
-    const mapErrors = errors.mapped();
+    const result = {};
+    let mapErrors = errors.mapped();
     try {
-      const [dupeName, dupeEmail] = await Promise.all([
-        User.findOne({ username: req.body.username }, "name").exec(),
-        User.findOne({ email: req.body.email }, "email").exec(),
-      ]);
-      if (dupeName) {
-        mapErrors.username = { msg: "That username is already in use." };
-      }
-      if (dupeEmail) mapErrors.email = { msg: "That email is already in use" };
+      const user = {
+        username: req.body.username,
+        email: req.body.email,
+        password: req.body.password,
+      };
 
+      if (errors.isEmpty()) {
+        const data = await queries.createUser(user);
+        user.id = data.userObj.id;
+        mapErrors.email = result.errors?.email ? result.errors.email : null;
+        mapErrors.username = result.errors?.username
+          ? result.errors.username
+          : null;
+      }
       if (!errors.isEmpty() || mapErrors.username || mapErrors.email) {
         res.render("signup", {
           title: "Sign Up",
@@ -46,12 +51,6 @@ exports.signUp_post = [
           username: req.body.username,
         });
       } else {
-        const user = new User({
-          username: req.body.username,
-          email: req.body.email,
-          password: req.body.password,
-        });
-        await user.save();
         req.login(user, (err) => {
           if (err) return next(err);
           return res.redirect("/");
@@ -93,7 +92,11 @@ exports.logout = (req, res, next) => {
 };
 
 exports.become_member_get = (req, res, next) => {
-  if (!req.user || (req.user && (req.user.isMember || req.user.isAdmin))) {
+  if (
+    !req.user ||
+    req.user.permissions === "member" ||
+    req.user.permissions === "admin"
+  ) {
     return res.redirect("/");
   } else {
     res.render("roleForm", {
@@ -104,7 +107,11 @@ exports.become_member_get = (req, res, next) => {
 };
 
 exports.become_member_post = async (req, res, next) => {
-  if (!req.user || (req.user && req.user.isMember)) {
+  if (
+    !req.user ||
+    req.user.permissions === "member" ||
+    req.user.permissions === "admin"
+  ) {
     return res.redirect("/");
   } else {
     const match = req.body.password === process.env.MEMBERPW;
@@ -115,10 +122,8 @@ exports.become_member_post = async (req, res, next) => {
         pwHint: true,
       });
     } else {
-      const newMember = new User(req.user);
-      newMember.isMember = true;
       try {
-        await User.findByIdAndUpdate(req.user.id, newMember);
+        await queries.updateUser(req.user.id, "member");
         res.redirect("/");
       } catch (err) {
         return next(err);
@@ -128,7 +133,7 @@ exports.become_member_post = async (req, res, next) => {
 };
 
 exports.become_admin_get = (req, res, next) => {
-  if (!req.user || (req.user && req.user.isAdmin)) {
+  if (!req.user || req.user.permissions === "admin") {
     return res.redirect("/");
   }
   res.render("roleForm", {
@@ -137,7 +142,7 @@ exports.become_admin_get = (req, res, next) => {
 };
 
 exports.become_admin_post = async (req, res, next) => {
-  if (!req.user || (req.user && req.user.isAdmin)) {
+  if (!req.user || req.user.permissions === "admin") {
     return res.redirect("/");
   }
   const match = req.body.password === process.env.ADMINPW;
@@ -147,11 +152,8 @@ exports.become_admin_post = async (req, res, next) => {
       error: "Incorrect Password",
     });
   } else {
-    const newAdmin = new User(req.user);
-    newAdmin.isAdmin = true;
-    newAdmin.isMember = true;
     try {
-      await User.findByIdAndUpdate(req.user.id, newAdmin);
+      await queries.updateUser(req.user.id, "admin");
       res.redirect("/");
     } catch (err) {
       return next(err);
