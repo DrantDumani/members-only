@@ -23,10 +23,11 @@ exports.createUser = async (user) => {
   const result = {};
   try {
     const { rows } = await pool.query(
-      `INSERT INTO users (username, email, password) VALUES ($1, $2, $3)`,
+      `INSERT INTO users (username, email, password) VALUES ($1, $2, $3) 
+      RETURNING id`,
       [user.username, user.email, user.password]
     );
-    result.user = rows[0];
+    result.userObj = rows[0];
   } catch (err) {
     if (err.constraint === "no_dupe_names") {
       result.errors.username = { msg: "That username is already in use." };
@@ -36,4 +37,15 @@ exports.createUser = async (user) => {
   } finally {
     return result;
   }
+};
+
+exports.getUserByColumnField = async (column, value) => {
+  let queryStr = "";
+  if (column === "id") {
+    queryStr += "SELECT * FROM users WHERE id = $1";
+  } else if (column === "email") {
+    queryStr += `SELECT * FROM users WHERE email = $1`;
+  }
+  const { rows } = await pool.query(queryStr, [value]);
+  return rows[0];
 };

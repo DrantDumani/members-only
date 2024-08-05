@@ -6,7 +6,7 @@ block content
     if user
       div.user-info
         h2 Welcome #{user.username}
-        p.user-status Status: #{user.status}
+        p.user-status Status: #{user.permissions}
     
     if posts.length
       each post in posts

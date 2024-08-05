@@ -1,9 +1,12 @@
 const createError = require("http-errors");
 const express = require("express");
 const session = require("express-session");
+
 const path = require("path");
 const logger = require("morgan");
 require("dotenv").config();
+const pool = require("./db/pool");
+const pgSession = require("connect-pg-simple")(session);
 // const mongoose = require("mongoose");
 // const MongoStore = require("connect-mongo");
 const compression = require("compression");
@@ -37,21 +40,25 @@ app.set("view engine", "pug");
 app.use(logger("dev"));
 app.use(express.json());
 
-// const sessionConfig = {
-//   secret: process.env.SECRET,
-//   store: MongoStore.create({ clientPromise: client }),
-//   resave: false,
-//   saveUninitialized: true,
-//   cookie: { maxAge: 1000 * 3600 },
-// };
+const pgSessionConfig = {
+  pool: pool,
+};
+
+const sessionConfig = {
+  secret: process.env.SECRET,
+  store: new pgSession(pgSessionConfig),
+  resave: false,
+  saveUninitialized: true,
+  cookie: { maxAge: 1000 * 3600 },
+};
 
 // if (app.get("env") === "production") {
 //   app.set("trust proxy", 1);
 //   sessionConfig.cookie.secure = true;
 // }
 
-// app.use(session(sessionConfig));
-// app.use(passport.session());
+app.use(session(sessionConfig));
+app.use(passport.session());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(helmet());
