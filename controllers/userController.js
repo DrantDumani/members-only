@@ -1,6 +1,7 @@
 const passport = require("../utils/passportConfig");
 const User = require("../models/user");
 const { body, validationResult } = require("express-validator");
+const queries = require("../db/queries");
 require("dotenv").config();
 
 exports.signUp_get = (req, res, next) => {
@@ -9,6 +10,68 @@ exports.signUp_get = (req, res, next) => {
 };
 
 exports.signUp_post = [
+  body("username", "Username cannot be empty")
+    .trim()
+    .isLength({ min: 1 })
+    .isLength({ max: 40 })
+    .withMessage("Username cannot be over 40 characters"),
+  body("email", "Please enter a valid email address")
+    .trim()
+    .isLength({ min: 1 })
+    .isEmail(),
+  body("password", "Password must be at least 5 characters")
+    .trim()
+    .isLength({ min: 5 }),
+  body("confirmPass", "Passwords must match").custom((value, { req }) => {
+    return value === req.body.password;
+  }),
+  async (req, res, next) => {
+    const errors = validationResult(req);
+    let mapErrors = errors.mapped();
+    try {
+      // const [dupeName, dupeEmail] = await Promise.all([
+      //   User.findOne({ username: req.body.username }, "name").exec(),
+      //   User.findOne({ email: req.body.email }, "email").exec(),
+      // ]);
+      // if (dupeName) {
+      //   mapErrors.username = { msg: "That username is already in use." };
+      // }
+      // if (dupeEmail) mapErrors.email = { msg: "That email is already in use" };
+      const user = {
+        username: req.body.username,
+        email: req.body.email,
+        password: req.body.password,
+      };
+
+      if (errors.isEmpty()) {
+        const result = await queries.createUser(user);
+        mapErrors.email = result.errors?.email ? result.errors.email : null;
+        mapErrors.username = result.errors?.username
+          ? result.errors.username
+          : null;
+      }
+      if (!errors.isEmpty() || mapErrors.username || mapErrors.email) {
+        res.render("signup", {
+          title: "Sign Up",
+          errors: mapErrors,
+          email: req.body.email,
+          username: req.body.username,
+        });
+      } else {
+        // await user.save();
+
+        req.login(user, (err) => {
+          if (err) return next(err);
+          return res.redirect("/");
+        });
+      }
+    } catch (err) {
+      return next(err);
+    }
+  },
+];
+
+exports.OLDsignUp_post = [
   body("username", "Username cannot be empty")
     .trim()
     .isLength({ min: 1 })

@@ -1,8 +1,31 @@
 const Post = require("../models/post");
 const User = require("../models/user");
 const { body, validationResult } = require("express-validator");
+const queries = require("../db/queries");
 
 exports.post_list = async (req, res, next) => {
+  try {
+    const permissions = req?.user?.status;
+    const page = Number(req.query.page) || 1;
+    const postsPerPage = 10;
+
+    const [posts, postCount] = await Promise.all([
+      queries.getPostList(permissions, (page - 1) * postsPerPage, postsPerPage),
+      queries.getPostCount(),
+    ]);
+
+    res.render("index", {
+      title: "Clubhouse",
+      posts: posts,
+      count: postCount / postsPerPage,
+      currentPage: page,
+    });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+exports.OLDpost_list = async (req, res, next) => {
   try {
     const page = Number(req.query.page) || 1;
     const postsPerPage = 10;
