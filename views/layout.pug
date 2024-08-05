@@ -24,9 +24,9 @@ html
         div.user-ui
           if (user)
             a(href="/clubhouse/newMessage") New Message
-            if !user.isMember
+            if user.permissions !== "member" && user.permissions !== "admin" 
               a(href="/clubhouse/newMember") Become Member
-            if !user.isAdmin
+            if user.permissions === "member" 
               a(href="/clubhouse/newAdmin") Become Admin
 
         block content

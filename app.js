@@ -7,8 +7,6 @@ const logger = require("morgan");
 require("dotenv").config();
 const pool = require("./db/pool");
 const pgSession = require("connect-pg-simple")(session);
-// const mongoose = require("mongoose");
-// const MongoStore = require("connect-mongo");
 const compression = require("compression");
 const helmet = require("helmet");
 
@@ -23,15 +21,8 @@ const limiter = RateLimit({
   max: 100,
 });
 
-// mongoose.set("strictQuery", "false");
-// const mongoDB = process.env.MONGO_DB_URI;
-
-// const client = mongoose
-//   .connect(mongoDB)
-//   .then((m) => m.connection.getClient())
-//   .catch((err) => console.log(err));
-
 const app = express();
+app.use(limiter);
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -52,10 +43,10 @@ const sessionConfig = {
   cookie: { maxAge: 1000 * 3600 },
 };
 
-// if (app.get("env") === "production") {
-//   app.set("trust proxy", 1);
-//   sessionConfig.cookie.secure = true;
-// }
+if (app.get("env") === "production") {
+  app.set("trust proxy", 1);
+  sessionConfig.cookie.secure = true;
+}
 
 app.use(session(sessionConfig));
 app.use(passport.session());

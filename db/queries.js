@@ -3,14 +3,14 @@ const bcrypt = require("bcrypt");
 
 exports.getPostCount = async () => {
   const { rows } = await pool.query("SELECT COUNT(*) AS postCount FROM posts");
-  return rows[0].postCount;
+  return rows[0].postcount;
 };
 
 exports.getPostList = async (permission, offset, postsPerPage) => {
   const qStr =
     permission === "member" || permission === "admin"
       ? `SELECT posts.id, posts.title, posts.content, posts.created_at, users.username 
-    FROM posts JOIN users on posts.authorId = users.id`
+    FROM posts JOIN users on posts.authorId = users.id `
       : "SELECT id, title, content FROM posts ";
   const filterStr = "ORDER BY created_at DESC LIMIT $1 OFFSET $2";
   const fullStr = qStr + filterStr;
@@ -48,4 +48,32 @@ exports.getUserByColumnField = async (column, value) => {
   }
   const { rows } = await pool.query(queryStr, [value]);
   return rows[0];
+};
+
+exports.updateUser = async (userId, newStatus) => {
+  await pool.query(`UPDATE users SET permissions = $2 WHERE id = $1`, [
+    userId,
+    newStatus,
+  ]);
+};
+
+exports.createPost = async (title, content, userId) => {
+  await pool.query(
+    `INSERT INTO posts (title, content, authorId) VALUES ($1, $2, $3)`,
+    [title, content, userId]
+  );
+};
+
+exports.getPostById = async (postId) => {
+  const { rows } = await pool.query(
+    `SELECT posts.id, posts.title, posts.content, posts.created_at, users.username FROM posts
+    JOIN users ON posts.authorId = users.id 
+    WHERE posts.id = $1`,
+    [postId]
+  );
+  return rows[0];
+};
+
+exports.deletePost = async (postId) => {
+  await pool.query("DELETE FROM posts WHERE id = $1", [postId]);
 };

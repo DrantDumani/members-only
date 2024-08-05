@@ -1,5 +1,4 @@
 const passport = require("../utils/passportConfig");
-const User = require("../models/user");
 const { body, validationResult } = require("express-validator");
 const queries = require("../db/queries");
 require("dotenv").config();
@@ -93,7 +92,11 @@ exports.logout = (req, res, next) => {
 };
 
 exports.become_member_get = (req, res, next) => {
-  if (!req.user || (req.user && (req.user.isMember || req.user.isAdmin))) {
+  if (
+    !req.user ||
+    req.user.permissions === "member" ||
+    req.user.permissions === "admin"
+  ) {
     return res.redirect("/");
   } else {
     res.render("roleForm", {
@@ -104,7 +107,11 @@ exports.become_member_get = (req, res, next) => {
 };
 
 exports.become_member_post = async (req, res, next) => {
-  if (!req.user || (req.user && req.user.isMember)) {
+  if (
+    !req.user ||
+    req.user.permissions === "member" ||
+    req.user.permissions === "admin"
+  ) {
     return res.redirect("/");
   } else {
     const match = req.body.password === process.env.MEMBERPW;
@@ -115,10 +122,8 @@ exports.become_member_post = async (req, res, next) => {
         pwHint: true,
       });
     } else {
-      const newMember = new User(req.user);
-      newMember.isMember = true;
       try {
-        await User.findByIdAndUpdate(req.user.id, newMember);
+        await queries.updateUser(req.user.id, "member");
         res.redirect("/");
       } catch (err) {
         return next(err);
@@ -128,7 +133,7 @@ exports.become_member_post = async (req, res, next) => {
 };
 
 exports.become_admin_get = (req, res, next) => {
-  if (!req.user || (req.user && req.user.isAdmin)) {
+  if (!req.user || req.user.permissions === "admin") {
     return res.redirect("/");
   }
   res.render("roleForm", {
@@ -137,7 +142,7 @@ exports.become_admin_get = (req, res, next) => {
 };
 
 exports.become_admin_post = async (req, res, next) => {
-  if (!req.user || (req.user && req.user.isAdmin)) {
+  if (!req.user || req.user.permissions === "admin") {
     return res.redirect("/");
   }
   const match = req.body.password === process.env.ADMINPW;
@@ -147,11 +152,8 @@ exports.become_admin_post = async (req, res, next) => {
       error: "Incorrect Password",
     });
   } else {
-    const newAdmin = new User(req.user);
-    newAdmin.isAdmin = true;
-    newAdmin.isMember = true;
     try {
-      await User.findByIdAndUpdate(req.user.id, newAdmin);
+      await queries.updateUser(req.user.id, "admin");
       res.redirect("/");
     } catch (err) {
       return next(err);
